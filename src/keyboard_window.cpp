@@ -8,37 +8,57 @@
 using biv::KeyBoardWindow;
 
 KeyBoardWindow::KeyBoardWindow(QWidget* parent) : QWidget(parent) {
-	const int keyboard_width = 1160;
-	resize(keyboard_width, 710);
+    const int keyboard_width = 1160;
+    resize(keyboard_width, 710);
     setWindowTitle("Грустная Клавиатура");
-	
-	QPixmap pixmap("img/grustnii-smail.png");
-	QLabel* image = new QLabel(this);
-	image->setFixedSize(200, 200);
-	image->setPixmap(pixmap);
-	image->setScaledContents(true);
-	
-	QHBoxLayout* smail_layout = new QHBoxLayout();
-	smail_layout->addWidget(image);
+    
+    QPixmap pixmap("img/grustnii-smail.png");
+    QLabel* image = new QLabel(this);
+    image->setFixedSize(200, 200);
+    image->setPixmap(pixmap);
+    image->setScaledContents(true);
+    
+    QHBoxLayout* smail_layout = new QHBoxLayout();
+    smail_layout->addWidget(image);
 
     display = new QLineEdit();
-	display->setMinimumHeight(80);
-	display->setFont(QFont("Roboto", 40));
+    display->setMinimumHeight(80);
+    display->setFont(QFont("Roboto", 40));
     display->setReadOnly(true);
-	display->setText("Помоги мне заработать лучше...");
+    display->setText("Помоги мне заработать лучше...");
 
-	keyboard = new KeyBoard(keyboard_width);
+    keyboard = new KeyBoard(keyboard_width);
 
     QVBoxLayout* main_layout = new QVBoxLayout(this);
-	main_layout->addLayout(smail_layout);
+    main_layout->addLayout(smail_layout);
     main_layout->addWidget(display);
     main_layout->addWidget(keyboard);
+    
+    // Подключаем сигнал от клавиатуры
+    connect(keyboard, &KeyBoard::buttonClicked, this, &KeyBoardWindow::onButtonClicked);
 }
 
 void KeyBoardWindow::keyPressEvent(QKeyEvent* event) {
-	const int key = event->nativeVirtualKey();
-	if (keyboard->is_key_allowed(key)) {
-		display->setText(display->text() + keyboard->get_key_text(key));
-		keyboard->animate_button(key);
-	}
+    const int key = event->nativeVirtualKey();
+    if (keyboard->is_key_allowed(key)) {
+        display->setText(display->text() + keyboard->get_key_text(key));
+        keyboard->animate_button(key);
+    }
+}
+
+void KeyBoardWindow::onButtonClicked(const QString& text) {
+    // Обработка нажатия кнопки мышью
+    if (text.isEmpty()) {
+        // Если это пробел (пустая кнопка)
+        display->setText(display->text() + " ");
+    } else if (text == "Удалить") {
+        // Удаляем последний символ
+        QString currentText = display->text();
+        if (!currentText.isEmpty()) {
+            display->setText(currentText.left(currentText.length() - 1));
+        }
+    } else {
+        // Обычная буква/символ
+        display->setText(display->text() + text);
+    }
 }

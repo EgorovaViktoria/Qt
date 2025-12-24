@@ -7,8 +7,13 @@
 #include <QWidget>
 
 namespace biv {
-	class KeyBoardButton : public QPushButton {
-		public:
-			KeyBoardButton(const QString& text = "", QWidget* parent = nullptr);
-	};
+    class KeyBoardButton : public QPushButton {
+        Q_OBJECT
+        
+        public:
+            KeyBoardButton(const QString& text = "", QWidget* parent = nullptr);
+            
+        signals:
+            void clickedWithText(const QString& text);  // Новый сигнал с текстом
+    };
 }
