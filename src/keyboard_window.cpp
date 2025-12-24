@@ -50,18 +50,22 @@ void biv::KeyBoardWindow::keyPressEvent(QKeyEvent* event) {
 
 // --- Обработка кликов по виртуальной клавиатуре ---
 void biv::KeyBoardWindow::onButtonClicked(const QString& text) {
+    bool wasReadOnly = display->isReadOnly();
+    display->setReadOnly(false);
+    display->moveCursor(QTextCursor::End);
+
     if (text.isEmpty()) {
-        // Пробел
-        display->setPlainText(display->toPlainText() + " ");
+        display->insertPlainText(" ");
     } else if (text == "Удалить") {
-        // Удаляем последний символ (с учётом многострочного текста)
-        QString currentText = display->toPlainText();
-        if (!currentText.isEmpty()) {
-            currentText.chop(1);
-            display->setPlainText(currentText);
-        }
+        // Удалить последний символ
+        QTextCursor cursor = display->textCursor();
+        cursor.movePosition(QTextCursor::End);
+        // выделить последний символ
+        cursor.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor);
+        cursor.removeSelectedText();
     } else {
-        // Любой другой символ (включая "\n" — перевод строки)
-        display->setPlainText(display->toPlainText() + text);
+        display->insertPlainText(text);
     }
+
+    display->setReadOnly(wasReadOnly);
 }
