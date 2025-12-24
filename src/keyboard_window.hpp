@@ -3,7 +3,7 @@
 #include <cstddef>
 
 #include <QKeyEvent>
-#include <QTextEdit>        // было #include <QLineEdit>
+#include <QTextEdit>      
 #include <QWidget>
 
 #include "keyboard.hpp"
@@ -13,7 +13,7 @@ namespace biv {
         Q_OBJECT
         
         private:
-            QTextEdit* display;         // было QLineEdit*
+            QTextEdit* display;     
             KeyBoard* keyboard;
 
         public:

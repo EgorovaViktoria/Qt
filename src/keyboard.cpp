@@ -80,7 +80,6 @@ void KeyBoard::animateButtonByText(const QString& text) {
 QString KeyBoard::get_key_text(const int code) const {
     if (buttons.find(code) != buttons.end()) {
         QString txt = buttons.at(code)->text();
-        // В будущем можно доработать — пока оставляем как есть
         return txt;
     }
     return "";
@@ -109,15 +108,12 @@ void KeyBoard::onButtonClicked(const QString& text) {
         emit buttonClicked("\t");
         return;
     }
-    // обычные буквы/цифры/символы/пробел/удалить
     QString out = text;
-    // Проверяем надо ли работать с регистром
     if (!text.isEmpty() && text.size() == 1 && text[0].isLetter()) {
         bool upper = shift_ ^ caps_lock_;
         out = upper ? text.toUpper() : text.toLower();
     }
     emit buttonClicked(out);
-    // Срабатывание шифта — одноразовое: после любого нажатия буквы сбрасываем
     if (shift_) {
         shift_ = false;
         update_buttons_case();
@@ -145,7 +141,6 @@ void KeyBoard::create_buttons(
     }
 }
 
-// обновляет визуализацию букв в зависимости от регистра (Caps/Shift)
 void KeyBoard::update_buttons_case() {
     bool upper = shift_ ^ caps_lock_;
     for (auto& [code, btn] : buttons) {

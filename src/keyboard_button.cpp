@@ -10,7 +10,6 @@ KeyBoardButton::KeyBoardButton(const QString& text, QWidget* parent)
     setText(text);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     
-    // Подключаем стандартный сигнал clicked к нашему сигналу
     connect(this, &QPushButton::clicked, [this, text]() {
         emit clickedWithText(text);
     });

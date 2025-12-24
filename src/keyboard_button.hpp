@@ -14,6 +14,6 @@ namespace biv {
             KeyBoardButton(const QString& text = "", QWidget* parent = nullptr);
             
         signals:
-            void clickedWithText(const QString& text);  // Новый сигнал с текстом
+            void clickedWithText(const QString& text);  
     };
 }

@@ -13,9 +13,9 @@ using biv::KeyBoardWindow;
 KeyBoardWindow::KeyBoardWindow(QWidget* parent) : QWidget(parent) {
     const int keyboard_width = 1160;
     resize(keyboard_width, 710);
-    setWindowTitle("Грустная Клавиатура");
+    setWindowTitle("Веселая Клавиатура");
     
-    QPixmap pixmap("img/grustnii-smail.png");
+    QPixmap pixmap("img/images.jpeg");
     QLabel* image = new QLabel(this);
     image->setFixedSize(200, 200);
     image->setPixmap(pixmap);
@@ -26,10 +26,10 @@ KeyBoardWindow::KeyBoardWindow(QWidget* parent) : QWidget(parent) {
 
     display = new QTextEdit();
     display->setMinimumHeight(80);
-    display->setMaximumHeight(120); // похожая высота как у QLineEdit
+    display->setMaximumHeight(120); 
     display->setFont(QFont("Roboto", 40));
     display->setReadOnly(true);
-    display->setPlainText("Помоги мне заработать лучше...");
+    display->setPlainText("Я крутая");
 
     keyboard = new KeyBoard(keyboard_width);
 
@@ -41,18 +41,15 @@ KeyBoardWindow::KeyBoardWindow(QWidget* parent) : QWidget(parent) {
     connect(keyboard, &KeyBoard::buttonClicked, this, &KeyBoardWindow::onButtonClicked);
 }
 
-// --- Ввод с обычной клавиатуры ---
 void biv::KeyBoardWindow::keyPressEvent(QKeyEvent* event) {
     int qtKey = event->key();
 
-    // --- Ввод букв, цифр, знаков ---
     if (event->text().size() && event->text()[0].isPrint()) {
         bool wasReadOnly = display->isReadOnly();
         display->setReadOnly(false);
         display->moveCursor(QTextCursor::End);
         display->insertPlainText(event->text());
         display->setReadOnly(wasReadOnly);
-        // Теперь красиво: вызываем метод у клавиатуры!
         keyboard->animateButtonByText(event->text());
         return;
     }

@@ -30,6 +30,8 @@ std::vector<KeyData> KeyBoardData::get_line4() const {
 	return {KEYS.begin() + 37, KEYS.begin() + 47};
 }
 
+
+
 bool KeyBoardData::is_key_allowed(const int code) const noexcept {
 	if (code < 65) {
 		return false;
