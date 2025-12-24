@@ -68,6 +68,15 @@ void KeyBoard::animate_button(const int code) {
     }
 }
 
+void KeyBoard::animateButtonByText(const QString& text) {
+    for (auto& [code, btn] : buttons) {
+        if (btn->text().compare(text, Qt::CaseInsensitive) == 0) {
+            btn->animateClick();
+            break;
+        }
+    }
+}
+
 QString KeyBoard::get_key_text(const int code) const {
     if (buttons.find(code) != buttons.end()) {
         QString txt = buttons.at(code)->text();

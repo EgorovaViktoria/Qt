@@ -5,6 +5,8 @@
 #include <QPixmap>
 #include <QVBoxLayout>
 #include <QTextEdit>
+#include <QKeyEvent>
+#include <QTextCursor>
 
 using biv::KeyBoardWindow;
 
@@ -24,7 +26,7 @@ KeyBoardWindow::KeyBoardWindow(QWidget* parent) : QWidget(parent) {
 
     display = new QTextEdit();
     display->setMinimumHeight(80);
-    display->setMaximumHeight(120); // делаем похожим по виду на QLineEdit
+    display->setMaximumHeight(120); // похожая высота как у QLineEdit
     display->setFont(QFont("Roboto", 40));
     display->setReadOnly(true);
     display->setPlainText("Помоги мне заработать лучше...");
@@ -35,20 +37,73 @@ KeyBoardWindow::KeyBoardWindow(QWidget* parent) : QWidget(parent) {
     main_layout->addLayout(smail_layout);
     main_layout->addWidget(display);
     main_layout->addWidget(keyboard);
-    
+
     connect(keyboard, &KeyBoard::buttonClicked, this, &KeyBoardWindow::onButtonClicked);
 }
 
-// --- Обработка физических нажатий кнопок клавиатуры (опционально, если нужно) ---
+// --- Ввод с обычной клавиатуры ---
 void biv::KeyBoardWindow::keyPressEvent(QKeyEvent* event) {
-    const int key = event->nativeVirtualKey();
-    if (keyboard->is_key_allowed(key)) {
-        display->setPlainText(display->toPlainText() + keyboard->get_key_text(key));
-        keyboard->animate_button(key);
+    int qtKey = event->key();
+
+    // --- Ввод букв, цифр, знаков ---
+    if (event->text().size() && event->text()[0].isPrint()) {
+        bool wasReadOnly = display->isReadOnly();
+        display->setReadOnly(false);
+        display->moveCursor(QTextCursor::End);
+        display->insertPlainText(event->text());
+        display->setReadOnly(wasReadOnly);
+        // Теперь красиво: вызываем метод у клавиатуры!
+        keyboard->animateButtonByText(event->text());
+        return;
+    }
+
+
+    switch (qtKey) {
+        case Qt::Key_Space:
+        {
+            bool wasReadOnly = display->isReadOnly();
+            display->setReadOnly(false);
+            display->moveCursor(QTextCursor::End);
+            display->insertPlainText(" ");
+            display->setReadOnly(wasReadOnly);
+            break;
+        }
+        case Qt::Key_Return:
+        case Qt::Key_Enter:
+        {
+            bool wasReadOnly = display->isReadOnly();
+            display->setReadOnly(false);
+            display->moveCursor(QTextCursor::End);
+            display->insertPlainText("\n");
+            display->setReadOnly(wasReadOnly);
+            break;
+        }
+        case Qt::Key_Backspace:
+        {
+            bool wasReadOnly = display->isReadOnly();
+            display->setReadOnly(false);
+            QTextCursor cursor = display->textCursor();
+            cursor.movePosition(QTextCursor::End);
+            cursor.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor);
+            cursor.removeSelectedText();
+            display->setReadOnly(wasReadOnly);
+            break;
+        }
+        case Qt::Key_Tab:
+        {
+            bool wasReadOnly = display->isReadOnly();
+            display->setReadOnly(false);
+            display->moveCursor(QTextCursor::End);
+            display->insertPlainText("\t");
+            display->setReadOnly(wasReadOnly);
+            break;
+        }
+        default:
+            QWidget::keyPressEvent(event); // стандартная обработка для прочих клавиш
     }
 }
 
-// --- Обработка кликов по виртуальной клавиатуре ---
+// --- Ввод через виртуальные кнопки ---
 void biv::KeyBoardWindow::onButtonClicked(const QString& text) {
     bool wasReadOnly = display->isReadOnly();
     display->setReadOnly(false);
@@ -57,10 +112,8 @@ void biv::KeyBoardWindow::onButtonClicked(const QString& text) {
     if (text.isEmpty()) {
         display->insertPlainText(" ");
     } else if (text == "Удалить") {
-        // Удалить последний символ
         QTextCursor cursor = display->textCursor();
         cursor.movePosition(QTextCursor::End);
-        // выделить последний символ
         cursor.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor);
         cursor.removeSelectedText();
     } else {
