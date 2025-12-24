@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2...3.27.5)
+cmake_minimum_required(VERSION 3.16)
 
 project(keyboard VERSION 0.1 LANGUAGES CXX)
 
@@ -13,20 +13,21 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 set(PROJECT_SOURCES
-        src/main.cpp
-		src/keyboard.cpp
-		src/keyboard_button.cpp
-		src/keyboard_data.cpp
-		src/keyboard_window.cpp
+    src/main.cpp
+    src/keyboard.cpp
+    src/keyboard_button.cpp
+    src/keyboard_data.cpp
+    src/keyboard_window.cpp
 )
 
 qt_add_executable(${PROJECT_NAME}
-	MANUAL_FINALIZATION
-	${PROJECT_SOURCES}
+    MANUAL_FINALIZATION
+    ${PROJECT_SOURCES}
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 
-set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE TRUE)
+# Убираем WIN32_EXECUTABLE для Linux
+# set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE TRUE)
 
 qt_finalize_executable(${PROJECT_NAME})

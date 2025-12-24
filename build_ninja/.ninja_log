@@ -1,0 +1,12 @@
+# ninja log v5
+2	36	1766581733862142823	keyboard_autogen/timestamp	7e0cad4bca94a62a
+2	36	1766581733862142823	keyboard_autogen/mocs_compilation.cpp	7e0cad4bca94a62a
+2	36	1766581733862142823	/home/viktoria/Documents/251115_qt_example/build_ninja/keyboard_autogen/timestamp	7e0cad4bca94a62a
+2	36	1766581733862142823	/home/viktoria/Documents/251115_qt_example/build_ninja/keyboard_autogen/mocs_compilation.cpp	7e0cad4bca94a62a
+36	50	1766581733884142782	CMakeFiles/keyboard.dir/keyboard_autogen/mocs_compilation.cpp.o	33c1fc7887cb22aa
+37	937	1766581734771141121	CMakeFiles/keyboard.dir/src/keyboard_data.cpp.o	dec402d2a11b718a
+36	1391	1766581735225140271	CMakeFiles/keyboard.dir/src/keyboard_button.cpp.o	9f694e540e5ba297
+36	1492	1766581735325140084	CMakeFiles/keyboard.dir/src/keyboard.cpp.o	d1ffb680621a5c28
+36	1542	1766581735376139989	CMakeFiles/keyboard.dir/src/main.cpp.o	81b5864636a95bd4
+37	1544	1766581735378139985	CMakeFiles/keyboard.dir/src/keyboard_window.cpp.o	6c7372b43a556d27
+1544	1832	1766581735661671232	keyboard	9e21cb2235959177
