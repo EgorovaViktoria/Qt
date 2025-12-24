@@ -1,5 +1,0 @@
-/home/viktoria/Documents/251115_qt_example/build_ninja/CMakeFiles/keyboard.dir
-/home/viktoria/Documents/251115_qt_example/build_ninja/CMakeFiles/edit_cache.dir
-/home/viktoria/Documents/251115_qt_example/build_ninja/CMakeFiles/rebuild_cache.dir
-/home/viktoria/Documents/251115_qt_example/build_ninja/CMakeFiles/keyboard_autogen_timestamp_deps.dir
-/home/viktoria/Documents/251115_qt_example/build_ninja/CMakeFiles/keyboard_autogen.dir
