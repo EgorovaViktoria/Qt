@@ -4,6 +4,7 @@
 #include <QLabel>
 #include <QPixmap>
 #include <QVBoxLayout>
+#include <QTextEdit>
 
 using biv::KeyBoardWindow;
 
@@ -21,11 +22,12 @@ KeyBoardWindow::KeyBoardWindow(QWidget* parent) : QWidget(parent) {
     QHBoxLayout* smail_layout = new QHBoxLayout();
     smail_layout->addWidget(image);
 
-    display = new QLineEdit();
+    display = new QTextEdit();
     display->setMinimumHeight(80);
+    display->setMaximumHeight(120); // делаем похожим по виду на QLineEdit
     display->setFont(QFont("Roboto", 40));
     display->setReadOnly(true);
-    display->setText("Помоги мне заработать лучше...");
+    display->setPlainText("Помоги мне заработать лучше...");
 
     keyboard = new KeyBoard(keyboard_width);
 
@@ -34,31 +36,32 @@ KeyBoardWindow::KeyBoardWindow(QWidget* parent) : QWidget(parent) {
     main_layout->addWidget(display);
     main_layout->addWidget(keyboard);
     
-    // Подключаем сигнал от клавиатуры
     connect(keyboard, &KeyBoard::buttonClicked, this, &KeyBoardWindow::onButtonClicked);
 }
 
-void KeyBoardWindow::keyPressEvent(QKeyEvent* event) {
+// --- Обработка физических нажатий кнопок клавиатуры (опционально, если нужно) ---
+void biv::KeyBoardWindow::keyPressEvent(QKeyEvent* event) {
     const int key = event->nativeVirtualKey();
     if (keyboard->is_key_allowed(key)) {
-        display->setText(display->text() + keyboard->get_key_text(key));
+        display->setPlainText(display->toPlainText() + keyboard->get_key_text(key));
         keyboard->animate_button(key);
     }
 }
 
-void KeyBoardWindow::onButtonClicked(const QString& text) {
-    // Обработка нажатия кнопки мышью
+// --- Обработка кликов по виртуальной клавиатуре ---
+void biv::KeyBoardWindow::onButtonClicked(const QString& text) {
     if (text.isEmpty()) {
-        // Если это пробел (пустая кнопка)
-        display->setText(display->text() + " ");
+        // Пробел
+        display->setPlainText(display->toPlainText() + " ");
     } else if (text == "Удалить") {
-        // Удаляем последний символ
-        QString currentText = display->text();
+        // Удаляем последний символ (с учётом многострочного текста)
+        QString currentText = display->toPlainText();
         if (!currentText.isEmpty()) {
-            display->setText(currentText.left(currentText.length() - 1));
+            currentText.chop(1);
+            display->setPlainText(currentText);
         }
     } else {
-        // Обычная буква/символ
-        display->setText(display->text() + text);
+        // Любой другой символ (включая "\n" — перевод строки)
+        display->setPlainText(display->toPlainText() + text);
     }
 }

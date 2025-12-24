@@ -3,7 +3,7 @@
 #include <cstddef>
 
 #include <QKeyEvent>
-#include <QLineEdit>
+#include <QTextEdit>        // было #include <QLineEdit>
 #include <QWidget>
 
 #include "keyboard.hpp"
@@ -13,14 +13,14 @@ namespace biv {
         Q_OBJECT
         
         private:
-            QLineEdit* display;
+            QTextEdit* display;         // было QLineEdit*
             KeyBoard* keyboard;
 
         public:
             KeyBoardWindow(QWidget* parent = nullptr);
             
         private slots:
-            void onButtonClicked(const QString& text);  // Новый слот
+            void onButtonClicked(const QString& text);
             
         protected:
             void keyPressEvent(QKeyEvent* event) override;
