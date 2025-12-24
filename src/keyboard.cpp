@@ -1,19 +1,21 @@
 #include "keyboard.hpp"
 
+#include <QChar>
+
 using biv::KeyBoard;
 
-KeyBoard::KeyBoard(const int width, QWidget* parent) 
+KeyBoard::KeyBoard(const int width, QWidget* parent)
     : button_width(width / 29), QWidget(parent) {
 
     keyboard_data = new KeyBoardData();
-    
+
     QGridLayout* keys_layout = new QGridLayout(this);
     keys_layout->setContentsMargins(0, 0, 0, 0);
     keys_layout->setSpacing(5);
-    
+
     // 1-я линия
     create_buttons(keyboard_data->get_line1(), keys_layout, 0, 0);
-    
+
     KeyBoardButton* backspace_btn = new KeyBoardButton("Удалить");
     backspace_btn->setMinimumSize(2 * button_width, button_width);
     keys_layout->addWidget(backspace_btn, 0, 26, 2, 3);
@@ -24,30 +26,30 @@ KeyBoard::KeyBoard(const int width, QWidget* parent)
     tab_btn->setMinimumSize(2 * button_width, button_width);
     keys_layout->addWidget(tab_btn, 2, 0, 2, 3);
     connect(tab_btn, &KeyBoardButton::clickedWithText, this, &KeyBoard::onButtonClicked);
-    
+
     create_buttons(keyboard_data->get_line2(), keys_layout, 2, 3);
-    
+
     // 3-я линия
     KeyBoardButton* caps_btn = new KeyBoardButton("Caps");
     caps_btn->setMinimumSize(2 * button_width, button_width);
     keys_layout->addWidget(caps_btn, 4, 0, 2, 4);
     connect(caps_btn, &KeyBoardButton::clickedWithText, this, &KeyBoard::onButtonClicked);
-    
+
     create_buttons(keyboard_data->get_line3(), keys_layout, 4, 4);
-    
+
     KeyBoardButton* enter_btn = new KeyBoardButton("Enter");
     enter_btn->setMinimumSize(2 * button_width, button_width);
     keys_layout->addWidget(enter_btn, 4, 26, 2, 3);
     connect(enter_btn, &KeyBoardButton::clickedWithText, this, &KeyBoard::onButtonClicked);
-    
+
     // 4-я линия
     KeyBoardButton* left_shift_btn = new KeyBoardButton("Shift");
     left_shift_btn->setMinimumSize(2 * button_width, button_width);
     keys_layout->addWidget(left_shift_btn, 6, 0, 2, 5);
     connect(left_shift_btn, &KeyBoardButton::clickedWithText, this, &KeyBoard::onButtonClicked);
-    
+
     create_buttons(keyboard_data->get_line4(), keys_layout, 6, 5);
-    
+
     KeyBoardButton* right_shift_btn = new KeyBoardButton("Shift");
     right_shift_btn->setMinimumSize(2 * button_width, button_width);
     keys_layout->addWidget(right_shift_btn, 6, 25, 2, 4);
@@ -68,7 +70,9 @@ void KeyBoard::animate_button(const int code) {
 
 QString KeyBoard::get_key_text(const int code) const {
     if (buttons.find(code) != buttons.end()) {
-        return buttons.at(code)->text();
+        QString txt = buttons.at(code)->text();
+        // В будущем можно доработать — пока оставляем как есть
+        return txt;
     }
     return "";
 }
@@ -78,28 +82,67 @@ bool KeyBoard::is_key_allowed(const int code) const noexcept {
 }
 
 void KeyBoard::onButtonClicked(const QString& text) {
-    // Отправляем сигнал с текстом кнопки
-    emit buttonClicked(text);
+    if (text == "Shift") {
+        shift_ = true;
+        update_buttons_case();
+        return;
+    }
+    if (text == "Caps") {
+        caps_lock_ = !caps_lock_;
+        update_buttons_case();
+        return;
+    }
+    if (text == "Enter") {
+        emit buttonClicked("\n");
+        return;
+    }
+    if (text == "Tab") {
+        emit buttonClicked("\t");
+        return;
+    }
+    // обычные буквы/цифры/символы/пробел/удалить
+    QString out = text;
+    // Проверяем надо ли работать с регистром
+    if (!text.isEmpty() && text.size() == 1 && text[0].isLetter()) {
+        bool upper = shift_ ^ caps_lock_;
+        out = upper ? text.toUpper() : text.toLower();
+    }
+    emit buttonClicked(out);
+    // Срабатывание шифта — одноразовое: после любого нажатия буквы сбрасываем
+    if (shift_) {
+        shift_ = false;
+        update_buttons_case();
+    }
 }
 
 // ----------------------------------------------------------------------------
 //                                  PRIVATE
 // ----------------------------------------------------------------------------
 void KeyBoard::create_buttons(
-    const std::vector<KeyData>& data, 
-    QGridLayout* layout, 
+    const std::vector<KeyData>& data,
+    QGridLayout* layout,
     const int line,
     const int start_position
 ) {
     for (int i = 0; i < data.size(); i++) {
         KeyBoardButton* btn = new KeyBoardButton(data[i].text);
         btn->setMinimumSize(button_width, button_width);
-        
+
         layout->addWidget(btn, line, i * 2 + start_position, 2, 2);
-        
+
         buttons[data[i].code] = btn;
-        
-        // Подключаем сигнал от кнопки
+
         connect(btn, &KeyBoardButton::clickedWithText, this, &KeyBoard::onButtonClicked);
+    }
+}
+
+// обновляет визуализацию букв в зависимости от регистра (Caps/Shift)
+void KeyBoard::update_buttons_case() {
+    bool upper = shift_ ^ caps_lock_;
+    for (auto& [code, btn] : buttons) {
+        QString t = btn->text();
+        if (t.size() == 1 && t[0].isLetter()) {
+            btn->setText(upper ? t.toUpper() : t.toLower());
+        }
     }
 }
